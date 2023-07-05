@@ -32,11 +32,7 @@ public class FoodCan : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!feeding && Input.GetKeyDown(KeyCode.Mouse1))
-        {
-            feeding = !feeding;
-        }
-        else if (Input.GetKeyDown(KeyCode.F) || (feeding && Input.GetKeyDown(KeyCode.Mouse1)))
+        if (feeding && Input.GetKeyDown(KeyCode.Mouse1))
         {
             feeding = !feeding;
             if (!feeding)

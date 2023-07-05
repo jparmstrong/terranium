@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.AI;
 using static UnityEngine.GraphicsBuffer;
+using System;
 
 public class IguanaMainCharacter : MonoBehaviour {
 	Animator iguanaAnimator;
@@ -9,9 +10,8 @@ public class IguanaMainCharacter : MonoBehaviour {
     public Transform foodParent;
     public Waypoints waypoints;
     public Transform currentWaypoint = null;
-	private NavMeshAgent navMeshAgent;
 
-    private float moveSpeed = 3f;
+    private float moveSpeed = 1f;
     private float distanceThresholds = 1f;
 
     private int eaten = 1;
@@ -19,11 +19,6 @@ public class IguanaMainCharacter : MonoBehaviour {
     void Start () {
 		iguanaAnimator = GetComponent<Animator> ();
         currentWaypoint = waypoints.GetNextWaypoint(currentWaypoint);
-    }
-
-    private void Awake()
-    {
-		navMeshAgent = GetComponent<NavMeshAgent>();
     }
 
     public void Attack(){
@@ -35,8 +30,12 @@ public class IguanaMainCharacter : MonoBehaviour {
 	}
 	
 	public void Eat(){
-		iguanaAnimator.SetTrigger("EatDown");
-	}
+        float prev_speed = iguanaAnimator.speed;
+        iguanaAnimator.speed = 1f;
+        iguanaAnimator.SetTrigger("Eat");
+        iguanaAnimator.speed = prev_speed;
+
+    }
 
 	public void Death(){
 		iguanaAnimator.SetTrigger("Death");
@@ -48,23 +47,25 @@ public class IguanaMainCharacter : MonoBehaviour {
 
     void Update()
     {
+        Vector3 targetDirection;
         Transform food = FindFood();
         if (food != null)
         {
-            navMeshAgent.destination = food.position;
-            navMeshAgent.speed = 2f;
+            iguanaAnimator.speed = 3;
+            targetDirection = food.position - transform.position;
         }
         else
         {
-            navMeshAgent.destination = currentWaypoint.position;
-            navMeshAgent.speed = 0.3f;
-
-            Move(navMeshAgent.transform.position.x, navMeshAgent.transform.position.y);
             if (Vector3.Distance(transform.position, currentWaypoint.position) < distanceThresholds)
             {
                 currentWaypoint = waypoints.GetNextWaypoint(currentWaypoint);
             }
+
+            iguanaAnimator.speed = 1;
+            targetDirection = currentWaypoint.position - transform.position;
         }
+        float angle = Vector3.Angle(targetDirection, transform.forward);
+        Move(targetDirection.normalized.magnitude, angle * Mathf.PI / 180);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -93,7 +94,8 @@ public class IguanaMainCharacter : MonoBehaviour {
                 min_food = food;
                 continue;
             }
-            if ((transform.position-food.position).magnitude < (transform.position - min_food.position).magnitude)
+            if ((transform.position-food.position).magnitude < (transform.position - min_food.position).magnitude &&
+                (transform.position-min_food.position).magnitude > 2f)
             {
                 min_food = food;
             }
@@ -102,7 +104,7 @@ public class IguanaMainCharacter : MonoBehaviour {
     }
 
     public void Move(float v,float h){
-		iguanaAnimator.SetFloat("Forward", v);
-		iguanaAnimator.SetFloat("Turn", h);
+        iguanaAnimator.SetFloat("Forward", v);
+        iguanaAnimator.SetFloat("Turn", h);
 	}
 }
