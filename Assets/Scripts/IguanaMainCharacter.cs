@@ -11,7 +11,6 @@ public class IguanaMainCharacter : MonoBehaviour {
     public Waypoints waypoints;
     public Transform currentWaypoint = null;
 
-    private float moveSpeed = 1f;
     private float distanceThresholds = 1f;
 
     private int eaten = 1;
@@ -64,8 +63,9 @@ public class IguanaMainCharacter : MonoBehaviour {
             iguanaAnimator.speed = 1;
             targetDirection = currentWaypoint.position - transform.position;
         }
-        float angle = Vector3.Angle(targetDirection, transform.forward);
-        Move(targetDirection.normalized.magnitude, angle * Mathf.PI / 180);
+        float angle = Vector3.SignedAngle(targetDirection, transform.forward, Vector3.down);
+        float radians = angle * Mathf.Deg2Rad;
+        Move(targetDirection.normalized.magnitude, radians);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -76,7 +76,6 @@ public class IguanaMainCharacter : MonoBehaviour {
             Eat();
             Destroy(other.gameObject.transform.parent.gameObject);
             eaten++;
-            Debug.Log($"Eaten: {eaten}");
             if (this.transform.localScale.x < 20)
             {
                 this.transform.localScale += Vector3.one * 0.1f;
