@@ -59,7 +59,7 @@ public class FoodCan : MonoBehaviour
             float interpRatio = (float)System.Math.Max(System.Math.Min(worldPosition.y, turn_height), 0) / turn_height;
             transform.rotation = Quaternion.Euler(-100f * interpRatio, 0, 0);
 
-            if (Input.GetKeyDown(KeyCode.Mouse0))
+            if (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.F))
             {
                 GameObject mw = Instantiate(mealwormPrefab, this.transform.position + Vector3.back * (this.transform.lossyScale.y / 2), Quaternion.identity);
                 Rigidbody rb = mw.GetComponent<Rigidbody>();

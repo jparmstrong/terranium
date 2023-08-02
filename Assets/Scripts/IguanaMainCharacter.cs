@@ -13,8 +13,6 @@ public class IguanaMainCharacter : MonoBehaviour {
 
     private float distanceThresholds = 1f;
 
-    private int eaten = 1;
-
     void Start () {
 		iguanaAnimator = GetComponent<Animator> ();
         currentWaypoint = waypoints.GetNextWaypoint(currentWaypoint);
@@ -75,7 +73,6 @@ public class IguanaMainCharacter : MonoBehaviour {
             iguanaAnimator.SetTrigger("Rebirth");
             Eat();
             Destroy(other.gameObject.transform.parent.gameObject);
-            eaten++;
             if (this.transform.localScale.x < 20)
             {
                 this.transform.localScale += Vector3.one * 0.1f;
